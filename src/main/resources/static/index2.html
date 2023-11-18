@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SecurePass</title>
+</head>
+
+<body>
+    <p>Welcome to <span text="${appName}">Our App</span></p>
+
+    <div switch="${credentials}">
+        <h2 case="null">No credentials yet!</h2>
+        <div case="*">
+            <h2>Credentials</h2>
+            <table>
+                <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>URL</th>
+                    <th>Username</th>
+                    <th>Password</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr each="cred : ${credentials}">
+                    <td text="${cred.title}"></td>
+                    <td text="${cred.url}"></td>
+                    <td text="${cred.username}"></td>
+                    <td
+                            text="${cred.password}">
+
+                    </td>
+                    <td><a href="@{/edit/{id}(id=${cred.id})}">Edit</a></td>
+                    <td><a href="@{/delete/{id}(id=${cred.id})}">Delete</a></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <p><a href="./create.html">Add a new credential</a></p>
+    </div>
+
+    <div class="col-6 col-sm-6 col-md-4 col-lg-6">
+        <input type="text" class="form-control" id="inputPassword"
+               value="${password}">
+    </div>
+</body>
+</html>
+
+
+
+<!--
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>SecurePass</title>
+</head>
+<body>
+
+    <div class="col-sm-8 col-md-4 col-lg-3">
+        <button type="submit" class="btn btn-primary mb-3">Generate Password</button>
+    </div>
+    <p><a href="/hello">Greet the world!</a></p>
+
+    <form controller= "user" action="/add" method="POST">
+        <p>Let's add a user.</p>
+
+        <div>
+            <label for="firstName">First name:</label>
+            <input name="first" id="firstName" value="Homer">
+        </div>
+        <div>
+            <label for="lastName">Last name:</label>
+            <input name="last" id="lastName" value="Simpson">
+        </div>
+        <div>
+            <button>Add User</button>
+        </div>
+    </form>
+
+    <form controller= "user" action="/list" method="GET">
+        <button>List Users</button>
+    </form>
+
+    <form controller= "passwordGenerator" action="/generatePassword" method="GET">
+        <button>Generate Password</button>
+    </form>
+
+</body>
+</html>-->

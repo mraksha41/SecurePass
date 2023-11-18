@@ -5,6 +5,7 @@ import com.securepass.SecurePass.service.PasswordGeneratorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,7 +18,7 @@ public class PasswordGeneratorController {
     private PasswordGeneratorService passwordGeneratorService;
 
     @RequestMapping("/generatePassword")
-    public String generatePassword(StandardCredPreference credPref, ModelMap model) throws NoSuchAlgorithmException {
+    public void generatePassword(StandardCredPreference credPref, ModelMap model) throws NoSuchAlgorithmException {
         credPref.setLength(12);
         credPref.setSymbols(true);
         credPref.setUppercase(true);
@@ -26,9 +27,7 @@ public class PasswordGeneratorController {
         String password = passwordGeneratorService.checkAlgorithm(credPref);
         System.out.println("password");
         System.out.println(password);
-        model.put("password", password);
-        model.put("credPref", credPref);
-        return password;
+        return ;
 
         /*PasswordGenerator gen = new PasswordGenerator();
         CharacterData lowerCaseChars = EnglishCharacterData.LowerCase;

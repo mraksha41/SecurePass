@@ -5,4 +5,6 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface CredentialRepository extends CrudRepository<Credential, Integer> {
     Credential findCredentialById(Integer id);
+
+    boolean existsByPassword(String password);
 }

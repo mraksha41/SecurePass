@@ -4,16 +4,27 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.Data;
 
 @Entity
+@Data
 public class Credential {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
-    private String title;
+    private String name;
     private String url;
     private String username;
     private String password;
+
+    public Credential() {}
+
+    public Credential(String name, String url, String username, String password) {
+        this.name = name;
+        this.url = url;
+        this.username = username;
+        this.password = password;
+    }
 
     public Integer getId() {
         return id;
@@ -23,12 +34,12 @@ public class Credential {
         this.id = id;
     }
 
-    public String getTitle() {
-        return title;
+    public String getName() {
+        return name;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getUrl() {
