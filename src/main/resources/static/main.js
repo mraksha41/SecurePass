@@ -1,6 +1,11 @@
 let passwords = [];
 
 async function displayPasswords() {
+    document.getElementById("usernameInput").value = "";
+    document.getElementById("passwordInput").value = "";
+    document.getElementById("nameInput").value = "";
+    document.getElementById("urlInput").value = "";
+
     try {
         const response = await fetch('http://localhost:8080/credential/list');
         const data = await response.json();
@@ -165,10 +170,6 @@ async function savePassword(id){
         console.error('Error:', error);
     }
 
-    document.getElementById("usernameInput").value = "";
-    document.getElementById("passwordInput").value = "";
-    document.getElementById("nameInput").value = "";
-    document.getElementById("urlInput").value = "";
 
 }
 
@@ -193,6 +194,10 @@ async function editPassword(index, id) {
     cancelButton.onclick = function() {
         formContainer.classList.add("hidden");
         passwordTable.classList.remove("hidden");
+        document.getElementById("usernameInput").value = "";
+        document.getElementById("passwordInput").value = "";
+        document.getElementById("nameInput").value = "";
+        document.getElementById("urlInput").value = "";
     };
 }
 
@@ -250,6 +255,11 @@ document.getElementById("addButton").addEventListener("click", () => {
     cancelButton.onclick = function() {
         formContainer.classList.add("hidden");
         passwordTable.classList.remove("hidden");
+        document.getElementById("usernameInput").value = "";
+        document.getElementById("passwordInput").value = "";
+        document.getElementById("nameInput").value = "";
+        document.getElementById("urlInput").value = "";
+
     };
 });
 
@@ -258,11 +268,11 @@ document.getElementById("generateButton").addEventListener("click", async () => 
     const passwordInput = document.getElementById("passwordInput");
     passwordInput.value = generatedPassword;
 //    passwordInput.type = "text"; // Change the input type temporarily
-
-    // Set a timeout to change it back to type "password" after 3 seconds (for visibility)
-    setTimeout(() => {
-      passwordInput.type = "password";
-    }, 500000); // Change this value to adjust the visibility duration
+//
+//    // Set a timeout to change it back to type "password" after 3 seconds (for visibility)
+//    setTimeout(() => {
+//      passwordInput.type = "password";
+//    }, 500000); // Change this value to adjust the visibility duration
 });
   
 displayPasswords();
