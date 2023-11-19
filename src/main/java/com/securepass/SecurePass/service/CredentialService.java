@@ -1,4 +1,4 @@
-package com.securepass.SecurePass.repositories;
+package com.securepass.SecurePass.service;
 
 import com.securepass.SecurePass.domain.Credential;
 
@@ -11,12 +11,12 @@ public interface CredentialService {
 
     // Read operation
     List<Credential> fetchCredentialList();
+    Credential fetchCredentialById(int id);
 
     // Update operation
-    Credential updateCredential(Credential cred, int id);
+    Credential updateCredential(Credential cred);
 
     // Delete operation
     void deleteCredentialById(int id);
 
-    public void checkPasswordStrength(String password);
 }

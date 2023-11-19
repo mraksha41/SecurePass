@@ -2,7 +2,6 @@ package com.securepass.SecurePass.service;
 
 import com.securepass.SecurePass.domain.Credential;
 import com.securepass.SecurePass.repositories.CredentialRepository;
-import com.securepass.SecurePass.repositories.CredentialService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,31 +11,40 @@ import java.util.Objects;
 @Service
 public class CredentialServiceImp implements CredentialService {
 
-    private CredentialService credentialService;
+    @Autowired
     private CredentialRepository credentialRepository;
-
-    public void checkPasswordStrength(String password){
-
-    }
+    @Autowired
+    private AESEncryptionServiceImp aesEncryptionService;
 
     // Save operation
     @Override
-    public Credential addCredential(Credential Credential)
+    public Credential addCredential(Credential credential)
     {
-        return credentialRepository.save(Credential);
+        credential.setPassword(aesEncryptionService.getEncryptedPassword(credential.getPassword()));
+        return credentialRepository.save(credential);
     }
 
     // Read operation
     @Override public List<Credential> fetchCredentialList()
     {
+        Iterable<Credential> credentialList = credentialRepository.findAll();
+        for (Credential credential : credentialList) {
+            credential.setPassword(aesEncryptionService.getDecryptedPassword(credential.getPassword()));
+        }
         return (List<Credential>) credentialRepository.findAll();
+    }
+
+    @Override public Credential fetchCredentialById(int id){
+        Credential credential = credentialRepository.findCredentialById(id);
+        credential.setPassword(aesEncryptionService.getDecryptedPassword(credential.getPassword()));
+        return credential;
     }
 
     // Update operation
     @Override
-    public Credential updateCredential(Credential cred, int id)
+    public Credential updateCredential(Credential cred)
     {
-        Credential oldCred = credentialRepository.findById(id).get();
+        Credential oldCred = credentialRepository.findById(cred.getId()).get();
 
         if(Objects.nonNull(cred.getName()) && !cred.getName().equalsIgnoreCase("")){
             oldCred.setName(cred.getName());
@@ -51,7 +59,7 @@ public class CredentialServiceImp implements CredentialService {
         }
 
         if(Objects.nonNull(cred.getPassword()) && !cred.getPassword().equalsIgnoreCase("")){
-            oldCred.setPassword(cred.getPassword());
+            oldCred.setPassword(aesEncryptionService.getEncryptedPassword(cred.getPassword()));
         }
 
         return credentialRepository.save(oldCred);

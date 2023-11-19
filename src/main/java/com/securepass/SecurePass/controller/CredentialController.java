@@ -1,95 +1,69 @@
 package com.securepass.SecurePass.controller;
 
 import com.securepass.SecurePass.domain.Credential;
-import com.securepass.SecurePass.repositories.CredentialRepository;
-import com.securepass.SecurePass.service.AESEncryptionService;
-import com.securepass.SecurePass.service.CredentialServiceImp;
-import com.securepass.SecurePass.service.PasswordStrengthService;
+import com.securepass.SecurePass.domain.StandardCredPreference;
+import com.securepass.SecurePass.service.*;
 import com.securepass.SecurePass.util.ReturnCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Objects;
+import java.security.NoSuchAlgorithmException;
 
 @RestController
 public class CredentialController {
 
     @Autowired
-    private CredentialRepository credentialRepository;
-    private CredentialServiceImp credentialService;
+    private CredentialService credentialService;
 
+    @Autowired
     private AESEncryptionService aesEncryptionService;
+    @Autowired
     private PasswordStrengthService passwordStrengthService;
+    @Autowired
+    private PasswordGeneratorService passwordGeneratorService;
 
     @GetMapping("/credential/list")
     public Iterable<Credential> getCredentials() {
-        return credentialRepository.findAll();
+        return credentialService.fetchCredentialList();
     }
 
     @PostMapping("/credential/save")
     public Credential saveCredential( @RequestBody Credential credential) {
-        credential.setPassword(aesEncryptionService.getEncryptedPassword(credential.getPassword()));
         if(credential.getId() !=  null){
-            Credential oldCred = credentialRepository.findById(credential.getId()).get();
-
-            if(Objects.nonNull(credential.getName()) && !credential.getName().equalsIgnoreCase("")){
-                oldCred.setName(credential.getName());
-            }
-
-            if(Objects.nonNull(credential.getUrl()) && !credential.getUrl().equalsIgnoreCase("")){
-                oldCred.setUrl(credential.getUrl());
-            }
-
-            if(Objects.nonNull(credential.getUsername()) && !credential.getUsername().equalsIgnoreCase("")){
-                oldCred.setUsername(credential.getUsername());
-            }
-
-            if(Objects.nonNull(credential.getPassword()) && !credential.getPassword().equalsIgnoreCase("")){
-                oldCred.setPassword(credential.getPassword());
-            }
-
-            return credentialRepository.save(oldCred);
+            return credentialService.updateCredential(credential);
         }
-        return credentialRepository.save(credential);
+        return credentialService.addCredential(credential);
     }
 
     @PostMapping("/credential/delete")
     public int deleteCredential(@RequestBody Integer id) {
-        credentialRepository.deleteById(id);
+        credentialService.deleteCredentialById(id);
         return 1;
     }
 
-    @PostMapping("/credential/view")
-    public String viewCredential(@PathVariable Integer id) {
-        Credential cred = findCredentialById(id);
-        String decryptedPassword = aesEncryptionService.getDecryptedPassword(cred.getPassword());
-        if(decryptedPassword != ""){
-            System.out.println("Password: " + decryptedPassword);
-        }else{
-            System.out.println("Error Occurred while decrypting the password");
-        }
-        return decryptedPassword;
-    }
-
-    @GetMapping("/credential/find/{id}")
-    public Credential findCredentialById(@PathVariable Integer id) {
-        return credentialRepository.findCredentialById(id);
+    @GetMapping("/credential/view")
+    public Credential viewCredential(@PathVariable Integer id) {
+        return credentialService.fetchCredentialById(id);
     }
 
     @PostMapping("/credential/checkOldPassword")
     public ReturnCode checkOldPassword(@RequestBody String password) {
-        System.out.println("checkOldPassword" + password);
-        ReturnCode result = passwordStrengthService.checkOldPassword(password);
-        System.out.println(result);
-        return result;
+        return passwordStrengthService.checkOldPassword(password);
     }
 
-    @PostMapping("/credential/evaluate")
+    @PostMapping("/credential/validate")
     public ReturnCode checkPasswordStrength(@RequestBody String password) {
-        System.out.println("password" + password);
-        ReturnCode result = passwordStrengthService.checkPasswordStrength(password);
-        System.out.println(result);
-        return result;
+        return passwordStrengthService.checkPasswordStrength(password);
+    }
+
+    @RequestMapping("credential/generatePassword")
+    public String generatePassword(StandardCredPreference credPref) throws NoSuchAlgorithmException {
+        credPref.setLength(12);
+        credPref.setSymbols(true);
+        credPref.setUppercase(true);
+        credPref.setAmbiguousCharacters(true);
+        credPref.setSimilarCharacters(true);
+        return passwordGeneratorService.checkAlgorithm(credPref);
     }
 
 }

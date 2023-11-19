@@ -1,6 +1,7 @@
 package com.securepass.SecurePass.service;
 
 import com.securepass.SecurePass.domain.StandardCredPreference;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.security.NoSuchAlgorithmException;
@@ -11,16 +12,23 @@ import java.util.List;
 import java.util.Random;
 
 @Service
-public class GenericPasswordGeneratorService implements PasswordGeneratorService{
+public class PasswordGeneratorServiceImp implements PasswordGeneratorService{
+
+    @Autowired
+    PasswordStrengthService passwordStrengthService;
+
     @Override
     public String algorithm(List<String> symbols, int length) throws NoSuchAlgorithmException {
         Random random = SecureRandom.getInstanceStrong();
         StringBuilder sb = new StringBuilder(length);
-        for (int i = 0; i < length; i++) {
-            int indexRandom = random.nextInt(symbols.size());
-            sb.append(symbols.get(indexRandom));
-        }
-        String password = sb.toString();
+        String password;
+        do{
+            for (int i = 0; i < length; i++) {
+                int indexRandom = random.nextInt(symbols.size());
+                sb.append(symbols.get(indexRandom));
+            }
+            password = sb.toString();
+        }while(!passwordStrengthService.checkPasswordStrength(password).getSuccess());
         return password;
     }
 
